@@ -4,6 +4,8 @@ class PostsController < ApplicationController
   before_action :set_post, only: [:show]
 
   def show
+    @comment = Comment.new
+    @comments = @post.comments.includes(:user)
   end
 
   def new
@@ -41,6 +43,22 @@ class PostsController < ApplicationController
     else
       render :edit
     end
+  end
+  
+  def favorite
+    post = Post.find(params[:id])
+
+    if current_user.favorite?(post)
+      #移除我的最愛
+      current_user.my_favorites.destroy(post)
+      render json: {status: 'remove'}
+    else
+      #新增我的最愛
+      current_user.my_favorites << post
+      render json: {status: 'add'}
+    end
+
+
   end
 
   private

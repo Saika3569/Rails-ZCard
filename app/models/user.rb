@@ -10,6 +10,9 @@ class User < ApplicationRecord
   before_create :encrypt_password
 
   has_many :posts
+  has_many :comments
+  has_many :favorite_posts
+  has_many :my_favorites, through: :favorite_posts, source: 'post'
 
   
 
@@ -17,6 +20,10 @@ class User < ApplicationRecord
     pw = Digest::SHA1.hexdigest("a#{user[:password]}z")
 
     User.find_by(email: user[:email], password: pw)
+  end
+
+  def favorite?(post)
+    my_favorites.include?(post)
   end
 
   private

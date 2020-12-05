@@ -1,3 +1,15 @@
+<h2 data-controller="favorite" data-favorite-id="<%= @post.id %>">
+  <% if user_signed_in?%>
+    <%= link_to '', data: { action:'favorite#go' } do %>
+      <% if current_user.favorite?(@post) %>
+        <i class="fas fa-thumbs-up" data-target="favorite.icon"></i>
+      <% else %>
+        <i class="far fa-thumbs-up" data-target="favorite.icon"></i>
+      <% end %>
+    <% end %>
+  <% end %>
+</h2>
+
 <h2><%= @post.user.nickname %></h2>
 <h1><%= @post.title %></h1>
 
@@ -8,3 +20,20 @@
 </article>
 
 <%= link_to '回上頁', :back %>
+
+ <%# form.for(@comment, url: post_comments_path(@post), remote: true) %>
+<%= form_with(model: @comment, url: post_comments_path(@post)) do |form| %>
+  <%= form.text_area :content, placeholder: '請輸入留言' %> 
+  <%= form.submit '送出'%>
+
+<% end %>
+
+
+<ul class="comment">
+  <%# render @comments  %>
+  <%# 完整寫法 render partial:"comments/comment", collection: @comments %>
+  <%# render collection  %>
+  <% @comments.each do |comment| %>
+    <%= render 'comments/comment', comment: comment%>
+  <%end%>
+</ul>

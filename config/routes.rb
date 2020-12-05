@@ -15,5 +15,10 @@ Rails.application.routes.draw do
     resources :posts, shallow: true
   end
 
-
+  resources :posts, only:[] do
+    resources :comments, shallow: true,  only: [:create , :destroy]
+    member do
+      post:favorite
+    end
+  end
 end
