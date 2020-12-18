@@ -15,6 +15,8 @@ class User < ApplicationRecord
   has_many :my_favorites, through: :favorite_posts, source: 'post'
   has_many :boards
   
+  include AASM
+  
 
   def self.login(user)
     pw = Digest::SHA1.hexdigest("a#{user[:password]}z")
@@ -31,7 +33,23 @@ class User < ApplicationRecord
     self.password = Digest::SHA1.hexdigest("a#{self.password}z")
   end
 
-  
+  aasm column: 'status', no_direct_assignment: true do
+    state :user, initial: true
+    state :vip, :vvip
+
+    event :pay_vip do
+      transitions from: :user, to: :hidden
+    
+    end
+
+    # event :pay_vvip do
+    #   transitions from: :user, to: :vvip
+    # end
+
+    event :pay_vvip do
+      transitions from: [:user, :vip ], to: :vvip
+    end
+  end
 
 end
 
