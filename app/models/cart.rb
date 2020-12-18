@@ -1,15 +1,46 @@
-# PORO = Plain Old Ruby Object
 class Cart
-  def initialize
-    @items = []
+  def initialize(items = [])
+    @items = items
+  end
+
+  def serialize 
+    # items = []
+    # @items.each do
+    #   items << |item| { "item_id" => item.id, "quantity" => item.quantity }
+    # end
+
+    items = @items.map {
+      |item| { "item_id" => item.item_id, "quantity" => item.quantity }
+    }
+    # items = [
+    #   { "item_id" => 1, "quantity" => 3 },
+    #   { "item_id" => 2, "quantity" => 2 }
+    # ]
+
+    { "items" => items }
+  end
+
+  def self.from_hash(hash)
+    if hash && hash["items"]
+      items = hash["items"].map {
+        |item| CartItem.new(item["item_id"],item["quantity"])
+      }
+      Cart.new(items)
+    else
+      Cart.new
+    end
   end
 
   def add_item(item_id, quantity = 1)
+    # 判斷
     found_item = @items.find { |item| item.item_id == item_id }
+
     if found_item
+      # 增加數量
       found_item.increment(quantity)
     else
-      @items << CartItem.new(item_id , quantity)
+      # 給一個新的 CartItem
+      @items << CartItem.new(item_id, quantity)
     end
   end
 
@@ -22,20 +53,12 @@ class Cart
   end
 
   def total_price
-    @items.sum { |item| item.total_price }
+    total = @items.sum { |item| item.total_price }
+
     if Date.today.month == 12 && Date.today.day == 12
       total = total * 0.9
     end
+
+    total
   end
-
-  def serialize
-    items =  [ 
-          {"item_id" => 1, "quantity" => 3},
-          {"item_id" => 2, "quantity" => 2}
-        ]
-    { "items" => items }
-  end
-
-
-
 end
