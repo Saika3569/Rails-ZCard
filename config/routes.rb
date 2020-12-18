@@ -12,13 +12,28 @@ Rails.application.routes.draw do
   end
 
   resources :boards do
+    member do
+      patch :hide
+      patch :open
+      patch :lock
+    end
     resources :posts, shallow: true
   end
 
   resources :posts, only:[] do
     resources :comments, shallow: true,  only: [:create , :destroy]
     member do
-      post:favorite
+      post :favorite
     end
   end
+
+  get 'pricing', to: 'pages#pricing'
+
+  resource :cart, only: [:show, :destroy] do
+    post 'add_item/:id', action: 'add_item' , as: 'add_item_path'
+  end
+
+  
+
+
 end
